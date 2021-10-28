@@ -50,9 +50,9 @@ type todoMongoRepo struct {
 	col *mongo.Collection
 }
 
-func NewTodoMongoRepo(col *mongo.Collection) ports.TodoRepository {
+func NewTodoMongoRepo(db *mongo.Database) ports.TodoRepository {
 	return &todoMongoRepo{
-		col: col,
+		col: db.Collection("todo"),
 	}
 }
 
