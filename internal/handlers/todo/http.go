@@ -14,9 +14,9 @@ func NewTodoHandler(todoUseCase ports.TodoUseCase, ws *restful.WebService) *Todo
 		todoUseCase: todoUseCase,
 	}
 
-	ws.Route(ws.GET("/api/todo/{id}").To(handler.Get).Consumes(restful.MIME_JSON).Produces(restful.MIME_JSON))
-	ws.Route(ws.GET("/api/todo").To(handler.List).Consumes(restful.MIME_JSON).Produces(restful.MIME_JSON))
-	ws.Route(ws.POST("/api/todo").To(handler.Create).Consumes(restful.MIME_JSON).Produces(restful.MIME_JSON))
+	ws.Route(ws.GET("/todo/{id}").To(handler.Get).Consumes(restful.MIME_JSON).Produces(restful.MIME_JSON))
+	ws.Route(ws.GET("/todo").To(handler.List).Consumes(restful.MIME_JSON).Produces(restful.MIME_JSON))
+	ws.Route(ws.POST("/todo").To(handler.Create).Consumes(restful.MIME_JSON).Produces(restful.MIME_JSON))
 
 	return handler
 }
@@ -61,8 +61,8 @@ func (tdh *TodoHandler) List(req *restful.Request, resp *restful.Response) {
 		return
 	}
 
-	var todos *ToDoList = &ToDoList{}
+	var todos ToDoList = ToDoList{}
 
-	todos.FromDomain(result)
+	todos = todos.FromDomain(result)
 	resp.WriteAsJson(todos)
 }

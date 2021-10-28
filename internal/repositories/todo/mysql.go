@@ -55,14 +55,14 @@ func NewTodoMysqlRepo(db *sql.DB) ports.TodoRepository {
 
 func (m *todoMysqlRepo) Get(id string) (*domain.ToDo, error) {
 	var todo toDoMysql = toDoMysql{}
-	sqsS := fmt.Sprintf("SELECT id, name, description FROM todo WHERE id = '%s'", id)
+	sqsS := fmt.Sprintf("SELECT id, title, description FROM todo WHERE id = '%s'", id)
 
 	result := m.db.QueryRow(sqsS)
 	if result.Err() != nil {
 		return nil, result.Err()
 	}
 
-	if err := result.Scan(todo.ID, todo.Title, todo.Description); err != nil {
+	if err := result.Scan(&todo.ID, &todo.Title, &todo.Description); err != nil {
 		return nil, err
 	}
 
@@ -71,7 +71,7 @@ func (m *todoMysqlRepo) Get(id string) (*domain.ToDo, error) {
 
 func (m *todoMysqlRepo) List() ([]domain.ToDo, error) {
 	var todos toDoListMysql
-	sqsS := fmt.Sprintf("SELECT id, name, description FROM todo")
+	sqsS := "SELECT id, title, description FROM todo"
 
 	result, err := m.db.Query(sqsS)
 	if err != nil {
@@ -85,7 +85,7 @@ func (m *todoMysqlRepo) List() ([]domain.ToDo, error) {
 	for result.Next() {
 		todo := toDoMysql{}
 
-		if err := result.Scan(todo.ID, todo.Title, todo.Description); err != nil {
+		if err := result.Scan(&todo.ID, &todo.Title, &todo.Description); err != nil {
 			return nil, err
 		}
 

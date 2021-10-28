@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func BuildMysqlConnUrl() string {

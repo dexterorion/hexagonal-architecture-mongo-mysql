@@ -10,6 +10,7 @@ type ToDo struct {
 
 func NewToDo(id string, title, description string) *ToDo {
 	return &ToDo{
+		ID:          id,
 		Title:       title,
 		Description: description,
 	}

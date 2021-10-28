@@ -31,15 +31,15 @@ func init() {
 func main() {
 	var todoRepo ports.TodoRepository
 	if repo == "mysql" {
-		todoRepo = startMongoRepo()
-	} else {
 		todoRepo = startMysqlRepo()
+	} else {
+		todoRepo = startMongoRepo()
 	}
 
 	todoUseCase := usecases.NewToDoUseCase(todoRepo)
 
 	ws := new(restful.WebService)
-
+	ws = ws.Path("/api")
 	handlerTodo.NewTodoHandler(todoUseCase, ws)
 	restful.Add(ws)
 

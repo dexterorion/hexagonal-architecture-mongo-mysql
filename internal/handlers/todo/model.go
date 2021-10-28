@@ -32,10 +32,12 @@ func (td *ToDo) ToDomain() *domain.ToDo {
 	}
 }
 
-func (td ToDoList) FromDomain(tdms []domain.ToDo) {
+func (td ToDoList) FromDomain(tdms []domain.ToDo) ToDoList {
 	for _, t := range tdms {
 		todo := ToDo{}
 		todo.FromDomain(&t)
 		td = append(td, todo)
 	}
+
+	return td
 }

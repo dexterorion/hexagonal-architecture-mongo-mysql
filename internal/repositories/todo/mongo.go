@@ -3,25 +3,23 @@ package todo
 import (
 	"context"
 
-	"github.com/dexterorion/hexagonal-architecture-mongo-mysql/helpers"
 	"github.com/dexterorion/hexagonal-architecture-mongo-mysql/internal/core/domain"
 	"github.com/dexterorion/hexagonal-architecture-mongo-mysql/internal/core/ports"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type toDoMongo struct {
-	ID          primitive.ObjectID `bson:"_id"`
-	Title       string             `bson:"title"`
-	Description string             `bson:"description"`
+	ID          string `bson:"_id"`
+	Title       string `bson:"title"`
+	Description string `bson:"description"`
 }
 
 type toDoListMongo []toDoMongo
 
 func (m *toDoMongo) ToDomain() *domain.ToDo {
 	return &domain.ToDo{
-		ID:          m.ID.Hex(),
+		ID:          m.ID,
 		Title:       m.Title,
 		Description: m.Description,
 	}
@@ -31,7 +29,7 @@ func (m *toDoMongo) FromDomain(todo *domain.ToDo) {
 		m = &toDoMongo{}
 	}
 
-	m.ID = helpers.SafeObjectIdFromString(todo.ID)
+	m.ID = todo.ID
 	m.Title = todo.Title
 	m.Description = todo.Description
 }
@@ -58,7 +56,7 @@ func NewTodoMongoRepo(db *mongo.Database) ports.TodoRepository {
 
 func (m *todoMongoRepo) Get(id string) (*domain.ToDo, error) {
 	var todo toDoMongo
-	result := m.col.FindOne(context.Background(), bson.M{"id": helpers.SafeObjectIdFromString(id)})
+	result := m.col.FindOne(context.Background(), bson.M{"_id": id})
 
 	if err := result.Decode(&todo); err != nil {
 		return nil, err
@@ -74,7 +72,7 @@ func (m *todoMongoRepo) List() ([]domain.ToDo, error) {
 		return nil, err
 	}
 
-	if err := result.All(context.Background(), todos); err != nil {
+	if err := result.All(context.Background(), &todos); err != nil {
 		return nil, err
 	}
 
@@ -82,7 +80,7 @@ func (m *todoMongoRepo) List() ([]domain.ToDo, error) {
 }
 
 func (m *todoMongoRepo) Create(todo *domain.ToDo) (*domain.ToDo, error) {
-	var tdMongo *toDoMongo
+	var tdMongo *toDoMongo = &toDoMongo{}
 	tdMongo.FromDomain(todo)
 
 	_, err := m.col.InsertOne(context.Background(), tdMongo)
